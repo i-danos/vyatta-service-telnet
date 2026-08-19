@@ -1,3 +1,60 @@
+vyatta-service-telnet (1.13) unstable; urgency=medium
+
+  * Depend on inetutils-telnetd rather than the generic telnetd name.
+    inetutils-telnetd provides the virtual package "telnetd", but Debian
+    also ships a real package of that name: an oldlibs transitional dummy
+    left over from the netkit-to-inetutils switch, whose Depends are
+    "inetutils-telnetd, update-inetd". A real package outranks a virtual
+    one, so the image picked up the dummy and, through it, update-inetd --
+    the very inetd machinery 1.12 set out to keep off the system.
+
+    Naming inetutils-telnetd directly drops both, and matches the units,
+    which already invoke that package's /usr/sbin/telnetd by path.
+
+ -- DANOS Package Maintainers <DANOS@att.com>  Wed, 19 Aug 2026 11:00:00 +0000
+
+vyatta-service-telnet (1.12) unstable; urgency=medium
+
+  * Drive Debian's inetutils telnetd instead of the retired netkit fork.
+    DANOS no longer builds netkit-telnet, so the "telnetd" dependency now
+    resolves to inetutils-telnetd, which installs /usr/sbin/telnetd rather
+    than netkit's /usr/sbin/in.telnetd. Both telnetd units pointed at the
+    old path and would have failed at startup with ENOENT, so the ExecStart
+    lines are updated. mini-inetd still fronts the daemon, unchanged.
+
+  * Drop the -N flag from the telnetd command lines. It was not a netkit
+    option either -- DANOS carried a local patch (142-numeric_hosts.diff)
+    that added it to force the peer address into utmp numerically instead
+    of resolving it. inetutils telnetd has no equivalent switch: it always
+    attempts a reverse lookup and records the name when one resolves,
+    falling back to the numeric address otherwise. The consequences are
+    that "last" now shows hostnames for telnet logins where it used to show
+    addresses, and that a login is delayed by the resolver timeout when a
+    nameserver is configured but unresponsive. Reintroducing the flag would
+    mean forking inetutils, so the upstream behaviour is taken as-is.
+
+  * Declare inet-superserver, and conflict with it. inetutils-telnetd
+    depends on "inetutils-inetd | inet-superserver"; the package only
+    claimed openbsd-inetd, which matches neither alternative, so apt pulled
+    in inetutils-inetd and with it the real update-inetd -- which collided
+    with the stub this package shipped, breaking the image build.
+
+    mini-inetd is the inet superserver on this system, so the package now
+    says so. Providing and conflicting with the same virtual package is the
+    idiom Debian's own inetd implementations use (inetutils-inetd and xinetd
+    both do it) and it makes the resolution deterministic: inetutils-inetd
+    becomes uninstallable here, so the dependency can only be satisfied by
+    the second alternative rather than by whichever one apt happens to
+    prefer.
+
+  * Stop shipping the /usr/sbin/update-inetd stub. It existed to turn other
+    packages' inetd registration calls into no-ops, which is unnecessary:
+    inetutils-telnetd guards its call with "command -v update-inetd" and
+    skips it when the program is absent. Removing the stub also removes the
+    file conflict with Debian's update-inetd package.
+
+ -- DANOS Package Maintainers <DANOS@att.com>  Wed, 19 Aug 2026 04:00:00 +0000
+
 vyatta-service-telnet (1.11) unstable; urgency=medium
 
   [ Nicholas Brown ]

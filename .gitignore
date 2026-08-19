@@ -1,0 +1,22 @@
+# 构建产物。上游树不带 .gitignore，而 DANOS 就地构建，
+# 所以 debhelper 和编译输出会落在源码旁边。
+
+# 编译输出
+/mini-inetd
+*.o
+
+# debhelper
+/debian/files
+/debian/tmp/
+/debian/.debhelper/
+/debian/*.substvars
+/debian/*.debhelper.log
+/debian/*.debhelper
+/debian/vyatta-service-telnet/
+/debian/vyatta-service-telnet-v1-yang/
+/debian/vyatta-service-telnet-routing-instance-v1-yang/
+/debian/vyatta-telnet-routing-instance/
+/debian/vyatta-service-telnet-dbgsym/
+
+# quilt
+/.pc/

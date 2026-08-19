@@ -9,14 +9,15 @@ Package: vyatta-service-telnet
 Architecture: any
 Depends: systemd,
  vyatta-cfg,
- telnetd,
+ inetutils-telnetd,
  libpam-systemd,
  ${misc:Depends},
  ${perl:Depends},
  ${shlibs:Depends}
 Breaks: vyatta-cfg-system (<< 1.6.0), vyatta-op (<< 1.0)
 Replaces: vyatta-cfg-system (<< 1.6.0), vyatta-op (<< 1.0)
-Provides: openbsd-inetd
+Provides: openbsd-inetd, inet-superserver
+Conflicts: inet-superserver
 Description: Telnet helper scripts
  Scripts to handle configuration of telnet
 
