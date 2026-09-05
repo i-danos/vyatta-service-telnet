@@ -1,7 +1,8 @@
-# 构建产物。上游树不带 .gitignore，而 DANOS 就地构建，
-# 所以 debhelper 和编译输出会落在源码旁边。
+# Build output. The upstream tree carries no .gitignore, and DANOS builds in
+# place, so both the debhelper and the compiler artefacts land beside the
+# source.
 
-# 编译输出
+# compiler output
 /mini-inetd
 *.o
 
